@@ -1,4 +1,4 @@
-rgname               = "rg-infra"
+resource_group_name               = "rg-infra"
 env                  = "test"
 workspace_name       = "dbw_dl_test"
 storage_account_name = "datalake"
