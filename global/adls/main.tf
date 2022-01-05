@@ -1,7 +1,7 @@
 # Configure the Azure provider
 # Azure Provider source and version being used
 data "azurerm_resource_group" "this" {
-  name = "rg_infra"
+  name =  var.resource_group_name
 }
 
 resource "azurerm_storage_account" "this" {
