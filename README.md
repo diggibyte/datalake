@@ -4,7 +4,7 @@ usage for setting up  remote azure state file
 ```
 terraform init   -backend-config=backend.hcl
 terraform plan   -var-file=dev.tfvars
-terraform apply  -var-file=dev.tfvars 
+terraform apply  c 
 ```
 
 backend.hcl 
@@ -16,3 +16,7 @@ container_name       = "container on azure blob"
 key                  = "file name in container"
 sas_token            = "xxxxx-xxx"
 ```
+
+
+TODO 
+azure storeage need to make private 
