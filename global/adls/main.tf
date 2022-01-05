@@ -1,38 +1,29 @@
 # Configure the Azure provider
 # Azure Provider source and version being used
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "=2.46.0"
-    }
-  }
+data "azurerm_resource_group" "this" {
+  name = "rg_infra"
 }
 
-# Configure the Microsoft Azure Provider
-provider "azurerm" {
-  features {}
-}
-
-resource "azurerm_resource_group" "rg" {
- name     =  var.rgname
-  location = var.location
-}
-
-resource "azurerm_storage_account" "dlstorage" {
-  name                     = var.storage_account_name
-  resource_group_name      = azurerm_resource_group.rg.name
-  location                 = azurerm_resource_group.rg.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS" # GRS for production use 
+resource "azurerm_storage_account" "this" {
+  name                      = "st${var.prefix}${var.storage_account_name}"
+  location                  = data.azurerm_resource_group.this.location
+  resource_group_name       = data.azurerm_resource_group.this.name
+  account_tier              = "Standard"
+  account_kind              = "StorageV2"
+  account_replication_type  = "LRS" # GRS for production use 
+  is_hns_enabled            = true  # for hirarical access 
+  access_tier               = "Hot"
+  enable_https_traffic_only = true
 
   tags = {
     environment = var.env
   }
 }
 
-  resource "azurerm_storage_container" "dlcontainer" {
-  name                  = var.storage_container
-  storage_account_name  = azurerm_storage_account.statestore.name
+resource "azurerm_storage_container" "dlcontainer" {
+  name                  = "cont${var.prefix}${var.storage_container}"
+  storage_account_name  = azurerm_storage_account.this.name
   container_access_type = "private"
 }
+
+

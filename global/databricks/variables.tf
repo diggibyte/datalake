@@ -11,6 +11,12 @@ variable "env" {
 
 }
 
+variable "workspace_name" {
+  type        = string
+  description = "Name of Databricks workspace"
+
+}
+
 variable "storage_account_name" {
   type        = string
   description = "Name of storage account name"

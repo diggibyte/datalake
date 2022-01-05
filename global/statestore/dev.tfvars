@@ -1,4 +1,4 @@
-rgname = "rg_common"
-env="dev"
+rgname = "rg_infra"
+env="prod"
 storage_account_name="azstatestore"
-storage_container="dev-state-container"
+storage_container="state-container"
