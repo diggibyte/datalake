@@ -1,0 +1,8 @@
+resource_group_name         = "terraform_windows_vm"
+resource_group_location     = "South India"
+virtual_network_name        = "vnet001"
+subnet_name                 = "subnet001"
+public_ip_name              = "publicip001"
+network_security_group_name = "nsg001"
+network_interface_name      = "nic001"
+windows_virtual_machine_name  = "windowsvm001"
