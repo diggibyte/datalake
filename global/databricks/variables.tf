@@ -39,3 +39,8 @@ variable "prefix" {
   description = "name prefix to identify organization / department"
 
 }
+
+variable "ARM_CLIENT_SECRET" {
+    type        = string
+    description = "This is another example input variable using env variables."
+}

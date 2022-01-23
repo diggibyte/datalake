@@ -17,6 +17,12 @@ variable "storage_account_name" {
 
 }
 
+variable "sp_displayname" {
+  type        = string
+  description = "Name of service principal to assign access "
+
+}
+
 variable "storage_container" {
   type        = string
   description = "Name of storage container name"

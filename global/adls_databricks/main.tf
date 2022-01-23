@@ -43,33 +43,25 @@ provider "databricks" {
 }
 
 
-#creating cluster
-data "databricks_node_type" "smallest" {
-  local_disk = true
+locals {
+  tenant_id    = "302c59ef-795c-4952-b4e0-6d874f2d4edc"
+  client_id    = "55555555-6666-7777-8888-999999999999"
+  secret_scope = "some-kv"
+  secret_key   = "some-sp-secret"
+  container    = "test"
+  storage_acc  = "lrs"
 }
 
-data "databricks_spark_version" "latest_lts" {
-  long_term_support = true
-  depends_on        = [azurerm_databricks_workspace.workspace] #this is dependent on cluster creating
-}
+resource "databricks_mount" "this" {
+  name = "tf-abfss"
 
-resource "databricks_cluster" "shared_autoscaling" {
-  cluster_name  = var.databricks_cluster_name
-  spark_version = data.databricks_spark_version.latest_lts.id
-  #  spark_version = data.databricks_spark_version.latest_lts.id
-  node_type_id            = data.databricks_node_type.smallest.id
-  autotermination_minutes = 10
-  autoscale {
-    min_workers = 1
-    max_workers = 20
+  uri = "abfss://${local.container}@${local.storage_acc}.dfs.core.windows.net"
+  extra_configs = {
+    "fs.azure.account.auth.type" : "OAuth",
+    "fs.azure.account.oauth.provider.type" : "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider",
+    "fs.azure.account.oauth2.client.id" : local.client_id,
+    "fs.azure.account.oauth2.client.secret" : "{{secrets/${local.secret_scope}/${local.secret_key}}}",
+    "fs.azure.account.oauth2.client.endpoint" : "https://login.microsoftonline.com/${local.tenant_id}/oauth2/token",
+    "fs.azure.createRemoteFileSystemDuringInitialization" : "false",
   }
 }
-
-#  spark_conf = {
-#    "spark.databricks.cluster.profile" : "serverless",
-#    "spark.databricks.repl.allowedLanguages" : "python,sql",
-#    "spark.databricks.passthrough.enabled" : "true",
-#    "spark.databricks.pyspark.enableProcessIsolation" : "true"
-#  }
-
-#}
