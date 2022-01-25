@@ -26,4 +26,13 @@ resource "azurerm_storage_container" "dlcontainer" {
   container_access_type = "private"
 }
 
+data "azuread_service_principal" "spblob" {
+  display_name = var.sp_displayname
+}
+
+resource "azurerm_role_assignment" "this" {
+  scope                = azurerm_storage_account.this.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = data.azuread_service_principal.spblob.object_id
+}
 
