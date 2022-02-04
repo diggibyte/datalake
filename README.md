@@ -46,5 +46,7 @@ terraform apply  c
 ```
 
 
-TODO 
-azure storeage need to make private 
+##Adding Guest user in AD  and Databricks :
+create guest user 
+give permission to workspace 
+add user in workspace 

@@ -9,10 +9,13 @@ data "azurerm_resource_group" "this" {
 resource "azuread_invitation" "example" {
   user_display_name  = "Anujsen18"
   user_email_address = "anujsen18@gmail.com"
-  redirect_url       = "https://portal.azure.com"
+  redirect_url       = "https://adb-2291077507431448.8.azuredatabricks.net"
 
   message {
     additional_recipients = ["anuj.sen@diggibyte.com"]
     body                  =  " Hello there! \n You are invited to join  Diggibyte  Data engineer Team !\n Plese complete the instruction "
   }
 }
+
+
+

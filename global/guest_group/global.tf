@@ -4,7 +4,7 @@ terraform {
     resource_group_name  = "rg_infra"
     storage_account_name = "azstatestore"
     container_name       = "state-container"
-    key                  = "guser.terraform.tfstate"
+    key                  = "gugroup.terraform.tfstate"
   }
 
   required_providers {
