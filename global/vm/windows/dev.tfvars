@@ -1,5 +1,4 @@
-resource_group_name         = "terraform_windows_vm"
-resource_group_location     = "South India"
+resource_group_name         = "rg_infra"
 virtual_network_name        = "vnet001"
 subnet_name                 = "subnet001"
 public_ip_name              = "publicip001"

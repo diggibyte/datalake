@@ -1,13 +1,15 @@
+
 variable "resource_group_name" {
   type        = string
-  description = "Resource group name in Azure"
+  description = "Name of Resource Group"
+
 }
 
-variable "resource_group_location" {
+variable "location" {
   type        = string
-  description = "Resource group location in Azure"
+  description = "locaion  of Resource Group"
+  default     = "North Europe"
 }
-
 variable "virtual_network_name" {
   type        = string
   description = "VNET name in Azure"

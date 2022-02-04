@@ -1,19 +1,16 @@
 # Create a resource group
-resource "azurerm_resource_group" "rg" {
-  name     = var.resource_group_name
-  location = var.resource_group_location
 
-  tags = {
-    terraform_VM = "windows"
-  }
+
+data "azurerm_resource_group" "rg" {
+  name =  var.resource_group_name
 }
 
 # Create virtual network for communication between multiple computers, virtual machines (VMs)
 resource "azurerm_virtual_network" "vnet" {
   name                = var.virtual_network_name
   address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
 
   tags = {
     terraform_VM = "windows"
@@ -23,7 +20,7 @@ resource "azurerm_virtual_network" "vnet" {
 # Create subnet for range of IP addresses in the virtual network
 resource "azurerm_subnet" "subnet" {
   name                 = var.subnet_name
-  resource_group_name  = azurerm_resource_group.rg.name
+  resource_group_name  = data.azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.1.0/24"]
 }
@@ -31,8 +28,8 @@ resource "azurerm_subnet" "subnet" {
 # Create public IPs
 resource "azurerm_public_ip" "public_ip" {
   name                = var.public_ip_name
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
   allocation_method   = "Dynamic"
 
   tags = {
@@ -43,8 +40,8 @@ resource "azurerm_public_ip" "public_ip" {
 # Create Network Security Group and rule
 resource "azurerm_network_security_group" "nsg" {
   name                = var.network_security_group_name
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
 
   security_rule {
     name                       = "SSH"
@@ -66,8 +63,8 @@ resource "azurerm_network_security_group" "nsg" {
 # Create network interface
 resource "azurerm_network_interface" "nic" {
   name                = var.network_interface_name
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
 
   ip_configuration {
     name                          = "myNicConfiguration"
@@ -91,7 +88,7 @@ resource "azurerm_network_interface_security_group_association" "association" {
 resource "random_id" "randomId" {
   keepers = {
     # Generate a new ID only when a new resource group is defined
-    resource_group = azurerm_resource_group.rg.name
+    resource_group = data.azurerm_resource_group.rg.name
   }
 
   byte_length = 8
@@ -100,8 +97,8 @@ resource "random_id" "randomId" {
 # Create storage account for boot diagnostics
 resource "azurerm_storage_account" "storage" {
   name                     = "diag${random_id.randomId.hex}"
-  resource_group_name      = azurerm_resource_group.rg.name
-  location                 = azurerm_resource_group.rg.location
+  resource_group_name      = data.azurerm_resource_group.rg.name
+  location                 = data.azurerm_resource_group.rg.location
   account_tier             = "Standard"
   account_replication_type = "LRS" # this is locally redundant storage
 
@@ -119,15 +116,15 @@ resource "tls_private_key" "example_ssh" {
 # Create virtual machine
 resource "azurerm_windows_virtual_machine" "windowsvm" {
   name                  = var.windows_virtual_machine_name
-  location              = azurerm_resource_group.rg.location
-  resource_group_name   = azurerm_resource_group.rg.name
+  location              = data.azurerm_resource_group.rg.location
+  resource_group_name   = data.azurerm_resource_group.rg.name
   network_interface_ids = [azurerm_network_interface.nic.id]
-  size                  = "Standard_B1ls" # instance details
+  size                  = "Standard_D2s_v3" # instance details
 
   os_disk {
     name                 = "myOsDisk"
     caching              = "ReadWrite"
-    storage_account_type = "Premium_LRS" # disk details
+    storage_account_type = "Standard_LRS" # disk details
   }
 
   source_image_reference {
@@ -139,7 +136,7 @@ resource "azurerm_windows_virtual_machine" "windowsvm" {
 
   #  computer_name  = "diggibyte"
   admin_username = "diggibyte"
-  admin_password = "Diggibye123@"
+  admin_password = "Diggibye123@123"
 
   tags = {
     terraform_VM = "windows"
