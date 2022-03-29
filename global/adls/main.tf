@@ -1,7 +1,14 @@
 # Configure the Azure provider
 # Azure Provider source and version being used
+
+resource "azurerm_resource_group" "this" {
+  name     = var.resource_group_name
+  location = var.location
+}
+
 data "azurerm_resource_group" "this" {
   name =  var.resource_group_name
+  depends_on = [azurerm_resource_group.this]
 }
 
 resource "azurerm_storage_account" "this" {
@@ -16,7 +23,9 @@ resource "azurerm_storage_account" "this" {
   enable_https_traffic_only = true
 
   tags = {
-    environment = var.env
+    environment = var.env,
+    costcenter= "internal",
+    subcostcenter= "de"
   }
 }
 
@@ -34,5 +43,6 @@ resource "azurerm_role_assignment" "this" {
   scope                = azurerm_storage_account.this.id
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = data.azuread_service_principal.spblob.object_id
+
 }
 

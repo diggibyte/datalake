@@ -44,8 +44,10 @@ terraform init   -backend-config=backend.hcl
 terraform plan   -var-file=dev.tfvars
 terraform apply  c 
 ```
-
-
+TODO 
+##Databricks mount 
+secrete scope creation in databricks is yet to be automated.
+[https://docs.microsoft.com/en-gb/azure/databricks/security/secrets/secret-scopes]
 ##Adding Guest user in AD  and Databricks :
 create guest user 
 give permission to workspace 

@@ -9,10 +9,12 @@ resource "azurerm_databricks_workspace" "this" {
   name                = "dbw_${var.prefix}_datalake"
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
-  sku                 = "standard"
+  sku                 = "premium"
 
   tags = {
-    Environment = var.env
+    environment = var.env,
+    costcenter= "internal",
+    subcostcenter= "de"
   }
 }
 
@@ -26,6 +28,10 @@ data "azurerm_storage_container" "this" {
   storage_account_name = data.azurerm_storage_account.this.name
 }
 
+
+resource "databricks_secret_scope" "this" {
+  name = "sc-sp-dwp"
+}
 
 #resource "databricks_secret_scope" "terraform" {
 #  name                     = "application"
@@ -50,6 +56,10 @@ locals {
 provider "databricks" {
   host                        = azurerm_databricks_workspace.this.workspace_url
   azure_workspace_resource_id = azurerm_databricks_workspace.this.id
+}
+
+output "databricks_host" {
+  value = azurerm_databricks_workspace.this.workspace_url
 }
 
 resource "databricks_mount" "this" {

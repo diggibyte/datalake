@@ -9,7 +9,7 @@ data "azurerm_resource_group" "rg" {
 resource "azurerm_virtual_network" "vnet" {
   name                = var.virtual_network_name
   address_space       = ["10.0.0.0/16"]
-  location            = data.azurerm_resource_group.rg.location
+  location            = "Central India"
   resource_group_name = data.azurerm_resource_group.rg.name
 
   tags = {
@@ -28,7 +28,7 @@ resource "azurerm_subnet" "subnet" {
 # Create public IPs
 resource "azurerm_public_ip" "public_ip" {
   name                = var.public_ip_name
-  location            = data.azurerm_resource_group.rg.location
+  location            = "Central India"
   resource_group_name = data.azurerm_resource_group.rg.name
   allocation_method   = "Dynamic"
 
@@ -38,6 +38,25 @@ resource "azurerm_public_ip" "public_ip" {
 }
 
 # Create Network Security Group and rule
+
+resource "azurerm_network_interface" "nic" {
+  name                = var.network_interface_name
+  location            = "Central India"
+  resource_group_name = data.azurerm_resource_group.rg.name
+
+  ip_configuration {
+    name                          = "winmyNicConfiguration"
+    subnet_id                     = azurerm_subnet.subnet.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.public_ip.id
+  }
+
+  tags = {
+    terraform_VM = "windows"
+  }
+}
+# Create network interface
+/*
 resource "azurerm_network_security_group" "nsg" {
   name                = var.network_security_group_name
   location            = data.azurerm_resource_group.rg.location
@@ -60,29 +79,11 @@ resource "azurerm_network_security_group" "nsg" {
   }
 }
 
-# Create network interface
-resource "azurerm_network_interface" "nic" {
-  name                = var.network_interface_name
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
-
-  ip_configuration {
-    name                          = "myNicConfiguration"
-    subnet_id                     = azurerm_subnet.subnet.id
-    private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.public_ip.id
-  }
-
-  tags = {
-    terraform_VM = "windows"
-  }
-}
-
 # Connect the security group to the network interface
 resource "azurerm_network_interface_security_group_association" "association" {
-  network_interface_id      = azurerm_network_interface.nic.id
+ network_interface_id      = azurerm_network_interface.nic.id
   network_security_group_id = azurerm_network_security_group.nsg.id
-}
+}*/
 
 # Generate random text for a unique storage account name
 resource "random_id" "randomId" {
@@ -98,7 +99,7 @@ resource "random_id" "randomId" {
 resource "azurerm_storage_account" "storage" {
   name                     = "diag${random_id.randomId.hex}"
   resource_group_name      = data.azurerm_resource_group.rg.name
-  location                 = data.azurerm_resource_group.rg.location
+  location                 = "Central India"
   account_tier             = "Standard"
   account_replication_type = "LRS" # this is locally redundant storage
 
@@ -116,21 +117,21 @@ resource "tls_private_key" "example_ssh" {
 # Create virtual machine
 resource "azurerm_windows_virtual_machine" "windowsvm" {
   name                  = var.windows_virtual_machine_name
-  location              = data.azurerm_resource_group.rg.location
+  location              = "Central India"
   resource_group_name   = data.azurerm_resource_group.rg.name
   network_interface_ids = [azurerm_network_interface.nic.id]
   size                  = "Standard_D2s_v3" # instance details
 
   os_disk {
-    name                 = "myOsDisk"
+    name                 = "winmyOsDisk"
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS" # disk details
   }
 
   source_image_reference {
-    publisher = "MicrosoftWindowsServer"
-    offer     = "WindowsServer"   # getting linux image
-    sku       = "2016-Datacenter" #intsance details
+    publisher = "MicrosoftWindowsDesktop"
+    offer     = "Windows-10"   # getting linux image
+    sku       = "win10-21h2-pron-g2" #intsance details
     version   = "latest"          # for latest version of ubuntu
   }
 

@@ -1,4 +1,4 @@
-resource_group_name         = "terraform_practice"
+resource_group_name         = "rg_infra"
 resource_group_location     = "South India"
 virtual_network_name        = "vnet001"
 subnet_name                 = "subnet001"
